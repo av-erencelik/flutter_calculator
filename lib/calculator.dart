@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Calculator extends StatefulWidget {
   const Calculator({super.key});
@@ -67,10 +68,10 @@ class _CalculatorState extends State<Calculator> {
                             child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: const [
-                            OperatorButton(),
-                            OperatorButton(),
-                            OperatorButton(),
-                            OperatorButton(),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
                           ],
                         )),
                         Expanded(
@@ -80,7 +81,7 @@ class _CalculatorState extends State<Calculator> {
                             NumbersButton(),
                             NumbersButton(),
                             NumbersButton(),
-                            OperatorButton(),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
                           ],
                         )),
                         Expanded(
@@ -90,7 +91,7 @@ class _CalculatorState extends State<Calculator> {
                             NumbersButton(),
                             NumbersButton(),
                             NumbersButton(),
-                            OperatorButton(),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
                           ],
                         )),
                         Expanded(
@@ -100,17 +101,19 @@ class _CalculatorState extends State<Calculator> {
                             NumbersButton(),
                             NumbersButton(),
                             NumbersButton(),
-                            OperatorButton(),
+                            OperatorButton(operatorIcon: Icons.abc),
                           ],
                         )),
                         Expanded(
                             child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: const [
-                            OperatorButton(),
+                            OperatorButton(
+                              operatorIcon: FontAwesomeIcons.c,
+                            ),
                             NumbersButton(),
                             NumbersButton(),
-                            OperatorButton(),
+                            OperatorButton(operatorIcon: FontAwesomeIcons.c),
                           ],
                         )),
                       ],
@@ -143,14 +146,17 @@ class NumbersButton extends StatelessWidget {
 class OperatorButton extends StatelessWidget {
   const OperatorButton({
     super.key,
+    required this.operatorIcon,
   });
+
+  final IconData operatorIcon;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: () {},
-        child: const Icon(
-          Icons.exposure_outlined,
+        child: Icon(
+          operatorIcon,
         ));
   }
 }
