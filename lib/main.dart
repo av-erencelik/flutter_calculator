@@ -21,18 +21,21 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
-          iconTheme: const IconThemeData(color: Colors.white, size: 30),
+          iconTheme: IconThemeData(color: Colors.grey, size: 30),
           textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                   padding: const EdgeInsets.all(18),
+                  foregroundColor: Colors.white,
                   side: const BorderSide(
                       width: 2, color: Color.fromARGB(168, 81, 80, 80)),
                   shape: const CircleBorder())),
           elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(168, 81, 80, 80),
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(18))),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(168, 81, 80, 80),
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(18),
+                foregroundColor: Colors.grey),
+          ),
           textTheme: const TextTheme(
               headlineLarge: TextStyle(fontSize: 75),
               headlineMedium: TextStyle(fontSize: 40),
