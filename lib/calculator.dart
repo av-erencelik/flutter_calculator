@@ -12,14 +12,69 @@ class Calculator extends StatefulWidget {
 
 class _CalculatorState extends State<Calculator> {
   String firstParam = "";
+  String operator = "";
+  String secondParam = "";
+  void handleOperation() {
+    if (firstParam.isEmpty || operator.isEmpty || secondParam.isEmpty) {
+      return;
+    }
+    RegExp regex = RegExp(r'([.]*0)(?!.*\d)');
+    if (operator == "+") {
+      setState(() {
+        secondParam = (double.parse(firstParam) + double.parse(secondParam))
+            .toString()
+            .replaceAll(regex, "");
+        ;
+        firstParam = "";
+      });
+    } else if (operator == "-") {
+      setState(() {
+        secondParam = (double.parse(secondParam) - double.parse(firstParam))
+            .toString()
+            .replaceAll(regex, "");
+        ;
+        firstParam = "";
+      });
+    }
+  }
+
   void changeState(String key) {
     if (firstParam.isNotEmpty) {
-      if (firstParam[0] == "0" && key == "0") return;
+      if (firstParam == "0" && key == "0") return;
       if (firstParam.contains(".") && key == ".") return;
     }
 
     setState(() {
       firstParam = "$firstParam$key";
+    });
+  }
+
+  void deleteLastInput(String operation) {
+    if (firstParam.isNotEmpty) {
+      setState(() {
+        firstParam = firstParam.substring(0, firstParam.length - 1);
+      });
+    }
+  }
+
+  void handleOperatorOnPress(String operation) {
+    if (firstParam.isNotEmpty && secondParam.isEmpty) {
+      setState(() {
+        operator = operation;
+        secondParam = firstParam;
+        firstParam = "";
+      });
+    } else if (firstParam.isNotEmpty && secondParam.isNotEmpty) {
+      operator = operation;
+      handleOperation();
+    }
+  }
+
+  void clearAll(String operation) {
+    setState(() {
+      firstParam = "";
+      secondParam = "";
+      operator = "";
     });
   }
 
@@ -44,11 +99,16 @@ class _CalculatorState extends State<Calculator> {
           child: Column(
             children: [
               DisplayScreen(
-                latestParam: firstParam,
+                firstParam: firstParam,
+                secondParam: secondParam,
+                operator: operator,
               ),
               const Divider(color: Colors.grey, height: 30),
               KeyboardScreen(
                 changeState: changeState,
+                handleOperatorOnPress: handleOperatorOnPress,
+                deleteLastInput: deleteLastInput,
+                clearAll: clearAll,
               )
             ],
           ),
@@ -62,8 +122,14 @@ class KeyboardScreen extends StatelessWidget {
   const KeyboardScreen({
     super.key,
     required this.changeState,
+    required this.handleOperatorOnPress,
+    required this.deleteLastInput,
+    required this.clearAll,
   });
   final void Function(String) changeState;
+  final void Function(String) handleOperatorOnPress;
+  final void Function(String) deleteLastInput;
+  final void Function(String) clearAll;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -73,12 +139,35 @@ class KeyboardScreen extends StatelessWidget {
           width: double.infinity,
           child: Column(
             children: [
-              FirstRow(changeState: changeState),
-              SecondRow(changeState: changeState),
-              ThirdRow(changeState: changeState),
-              FourthRow(changeState: changeState),
+              FirstRow(
+                changeState: changeState,
+                handleOperatorOnPress: handleOperatorOnPress,
+                deleteLastInput: deleteLastInput,
+                clearAll: clearAll,
+              ),
+              SecondRow(
+                changeState: changeState,
+                handleOperatorOnPress: handleOperatorOnPress,
+                deleteLastInput: deleteLastInput,
+                clearAll: clearAll,
+              ),
+              ThirdRow(
+                changeState: changeState,
+                handleOperatorOnPress: handleOperatorOnPress,
+                deleteLastInput: deleteLastInput,
+                clearAll: clearAll,
+              ),
+              FourthRow(
+                changeState: changeState,
+                handleOperatorOnPress: handleOperatorOnPress,
+                deleteLastInput: deleteLastInput,
+                clearAll: clearAll,
+              ),
               FifthRow(
                 changeState: changeState,
+                handleOperatorOnPress: handleOperatorOnPress,
+                deleteLastInput: deleteLastInput,
+                clearAll: clearAll,
               ),
             ],
           ),
@@ -90,16 +179,24 @@ class FifthRow extends StatelessWidget {
   const FifthRow({
     super.key,
     required this.changeState,
+    required this.handleOperatorOnPress,
+    required this.deleteLastInput,
+    required this.clearAll,
   });
   final void Function(String) changeState;
+  final void Function(String) handleOperatorOnPress;
+  final void Function(String) deleteLastInput;
+  final void Function(String) clearAll;
   @override
   Widget build(BuildContext context) {
     return Expanded(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const OperatorButton(
+        OperatorButton(
           operatorIcon: FontAwesomeIcons.c,
+          operatorString: "clear",
+          handleOperatorOnPress: clearAll,
         ),
         NumbersButton(
             numberIcon: FontAwesomeIcons.zero,
@@ -108,11 +205,12 @@ class FifthRow extends StatelessWidget {
         DotButton(
           changeState: changeState,
         ),
-        const OperatorButton(
-          operatorIcon: FontAwesomeIcons.equals,
-          operatorColor: Colors.white,
-          operatorBackgroundColor: Colors.red,
-        ),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.equals,
+            operatorColor: Colors.white,
+            operatorBackgroundColor: Colors.red,
+            operatorString: "=",
+            handleOperatorOnPress: handleOperatorOnPress),
       ],
     ));
   }
@@ -122,9 +220,14 @@ class FourthRow extends StatelessWidget {
   const FourthRow({
     super.key,
     required this.changeState,
+    required this.handleOperatorOnPress,
+    required this.deleteLastInput,
+    required this.clearAll,
   });
   final void Function(String) changeState;
-
+  final void Function(String) handleOperatorOnPress;
+  final void Function(String) deleteLastInput;
+  final void Function(String) clearAll;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -143,7 +246,10 @@ class FourthRow extends StatelessWidget {
             numberIcon: FontAwesomeIcons.three,
             changeState: changeState,
             numberString: "3"),
-        const OperatorButton(operatorIcon: FontAwesomeIcons.plus),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.plus,
+            operatorString: "+",
+            handleOperatorOnPress: handleOperatorOnPress),
       ],
     ));
   }
@@ -153,9 +259,14 @@ class ThirdRow extends StatelessWidget {
   const ThirdRow({
     super.key,
     required this.changeState,
+    required this.handleOperatorOnPress,
+    required this.deleteLastInput,
+    required this.clearAll,
   });
   final void Function(String) changeState;
-
+  final void Function(String) handleOperatorOnPress;
+  final void Function(String) deleteLastInput;
+  final void Function(String) clearAll;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -174,7 +285,10 @@ class ThirdRow extends StatelessWidget {
             numberIcon: FontAwesomeIcons.six,
             changeState: changeState,
             numberString: "6"),
-        const OperatorButton(operatorIcon: FontAwesomeIcons.minus),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.minus,
+            operatorString: "-",
+            handleOperatorOnPress: handleOperatorOnPress),
       ],
     ));
   }
@@ -184,9 +298,14 @@ class SecondRow extends StatelessWidget {
   const SecondRow({
     super.key,
     required this.changeState,
+    required this.handleOperatorOnPress,
+    required this.deleteLastInput,
+    required this.clearAll,
   });
   final void Function(String) changeState;
-
+  final void Function(String) handleOperatorOnPress;
+  final void Function(String) deleteLastInput;
+  final void Function(String) clearAll;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -206,7 +325,10 @@ class SecondRow extends StatelessWidget {
           changeState: changeState,
           numberString: "9",
         ),
-        const OperatorButton(operatorIcon: FontAwesomeIcons.xmark),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.xmark,
+            operatorString: "x",
+            handleOperatorOnPress: handleOperatorOnPress),
       ],
     ));
   }
@@ -216,19 +338,36 @@ class FirstRow extends StatelessWidget {
   const FirstRow({
     super.key,
     required this.changeState,
+    required this.handleOperatorOnPress,
+    required this.deleteLastInput,
+    required this.clearAll,
   });
   final void Function(String) changeState;
-
+  final void Function(String) handleOperatorOnPress;
+  final void Function(String) deleteLastInput;
+  final void Function(String) clearAll;
   @override
   Widget build(BuildContext context) {
     return Expanded(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
-        OperatorButton(operatorIcon: FontAwesomeIcons.plusMinus),
-        OperatorButton(operatorIcon: FontAwesomeIcons.divide),
-        OperatorButton(operatorIcon: FontAwesomeIcons.percent),
-        OperatorButton(operatorIcon: FontAwesomeIcons.deleteLeft),
+      children: [
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.plusMinus,
+            operatorString: "plus-minus",
+            handleOperatorOnPress: handleOperatorOnPress),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.divide,
+            operatorString: "/",
+            handleOperatorOnPress: handleOperatorOnPress),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.percent,
+            operatorString: "%",
+            handleOperatorOnPress: handleOperatorOnPress),
+        OperatorButton(
+            operatorIcon: FontAwesomeIcons.deleteLeft,
+            operatorString: "delete",
+            handleOperatorOnPress: deleteLastInput),
       ],
     ));
   }
@@ -237,9 +376,13 @@ class FirstRow extends StatelessWidget {
 class DisplayScreen extends StatelessWidget {
   const DisplayScreen({
     super.key,
-    required this.latestParam,
+    required this.firstParam,
+    required this.operator,
+    required this.secondParam,
   });
-  final String latestParam;
+  final String firstParam;
+  final String operator;
+  final String secondParam;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -255,14 +398,19 @@ class DisplayScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '150 +',
+                  '$secondParam $operator',
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.end,
                 ),
-                Text(
-                  latestParam,
-                  style: Theme.of(context).textTheme.headlineLarge,
-                )
+                firstParam.isEmpty
+                    ? Text(
+                        "0",
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      )
+                    : Text(
+                        firstParam,
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      )
               ],
             )
           ],
@@ -321,15 +469,19 @@ class OperatorButton extends StatelessWidget {
     required this.operatorIcon,
     this.operatorColor = Colors.grey,
     this.operatorBackgroundColor = const Color.fromARGB(168, 81, 80, 80),
+    required this.handleOperatorOnPress,
+    required this.operatorString,
   });
 
   final IconData operatorIcon;
+  final void Function(String) handleOperatorOnPress;
+  final String operatorString;
   final Color? operatorColor;
   final Color? operatorBackgroundColor;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: () {},
+        onPressed: () => handleOperatorOnPress(operatorString),
         style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
             backgroundColor: MaterialStatePropertyAll(operatorBackgroundColor)),
         child: Icon(
