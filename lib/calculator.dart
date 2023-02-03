@@ -1,3 +1,5 @@
+// ignore_for_file: void_checks
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,6 +11,18 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
+  String firstParam = "";
+  void changeState(String key) {
+    if (firstParam.isNotEmpty) {
+      if (firstParam[0] == "0" && key == "0") return;
+      if (firstParam.contains(".") && key == ".") return;
+    }
+
+    setState(() {
+      firstParam = "$firstParam$key";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,108 +43,229 @@ class _CalculatorState extends State<Calculator> {
           )),
           child: Column(
             children: [
-              Expanded(
-                flex: 4,
-                child: Container(
-                  width: double.infinity,
-                  color: Colors.transparent,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '150 +',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                            textAlign: TextAlign.end,
-                          ),
-                          Text(
-                            '23',
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
+              DisplayScreen(
+                latestParam: firstParam,
               ),
               const Divider(color: Colors.grey, height: 30),
-              Expanded(
-                  flex: 6,
-                  child: Container(
-                    color: Colors.transparent,
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            OperatorButton(
-                                operatorIcon: FontAwesomeIcons.plusMinus),
-                            OperatorButton(
-                                operatorIcon: FontAwesomeIcons.divide),
-                            OperatorButton(
-                                operatorIcon: FontAwesomeIcons.percent),
-                            OperatorButton(
-                                operatorIcon: FontAwesomeIcons.deleteLeft),
-                          ],
-                        )),
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            NumbersButton(numberIcon: FontAwesomeIcons.seven),
-                            NumbersButton(numberIcon: FontAwesomeIcons.eight),
-                            NumbersButton(numberIcon: FontAwesomeIcons.nine),
-                            OperatorButton(
-                                operatorIcon: FontAwesomeIcons.xmark),
-                          ],
-                        )),
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            NumbersButton(numberIcon: FontAwesomeIcons.four),
-                            NumbersButton(numberIcon: FontAwesomeIcons.five),
-                            NumbersButton(numberIcon: FontAwesomeIcons.six),
-                            OperatorButton(
-                                operatorIcon: FontAwesomeIcons.minus),
-                          ],
-                        )),
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            NumbersButton(numberIcon: FontAwesomeIcons.one),
-                            NumbersButton(numberIcon: FontAwesomeIcons.two),
-                            NumbersButton(numberIcon: FontAwesomeIcons.three),
-                            OperatorButton(operatorIcon: FontAwesomeIcons.plus),
-                          ],
-                        )),
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            OperatorButton(
-                              operatorIcon: FontAwesomeIcons.c,
-                            ),
-                            NumbersButton(numberIcon: FontAwesomeIcons.zero),
-                            DotButton(),
-                            OperatorButton(
-                              operatorIcon: FontAwesomeIcons.equals,
-                              operatorColor: Colors.white,
-                              operatorBackgroundColor: Colors.red,
-                            ),
-                          ],
-                        )),
-                      ],
-                    ),
-                  ))
+              KeyboardScreen(
+                changeState: changeState,
+              )
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class KeyboardScreen extends StatelessWidget {
+  const KeyboardScreen({
+    super.key,
+    required this.changeState,
+  });
+  final void Function(String) changeState;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        flex: 6,
+        child: Container(
+          color: Colors.transparent,
+          width: double.infinity,
+          child: Column(
+            children: [
+              FirstRow(changeState: changeState),
+              SecondRow(changeState: changeState),
+              ThirdRow(changeState: changeState),
+              FourthRow(changeState: changeState),
+              FifthRow(
+                changeState: changeState,
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
+class FifthRow extends StatelessWidget {
+  const FifthRow({
+    super.key,
+    required this.changeState,
+  });
+  final void Function(String) changeState;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const OperatorButton(
+          operatorIcon: FontAwesomeIcons.c,
+        ),
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.zero,
+            changeState: changeState,
+            numberString: "0"),
+        DotButton(
+          changeState: changeState,
+        ),
+        const OperatorButton(
+          operatorIcon: FontAwesomeIcons.equals,
+          operatorColor: Colors.white,
+          operatorBackgroundColor: Colors.red,
+        ),
+      ],
+    ));
+  }
+}
+
+class FourthRow extends StatelessWidget {
+  const FourthRow({
+    super.key,
+    required this.changeState,
+  });
+  final void Function(String) changeState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.one,
+            changeState: changeState,
+            numberString: "1"),
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.two,
+            changeState: changeState,
+            numberString: "2"),
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.three,
+            changeState: changeState,
+            numberString: "3"),
+        const OperatorButton(operatorIcon: FontAwesomeIcons.plus),
+      ],
+    ));
+  }
+}
+
+class ThirdRow extends StatelessWidget {
+  const ThirdRow({
+    super.key,
+    required this.changeState,
+  });
+  final void Function(String) changeState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.four,
+            changeState: changeState,
+            numberString: "4"),
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.five,
+            changeState: changeState,
+            numberString: "5"),
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.six,
+            changeState: changeState,
+            numberString: "6"),
+        const OperatorButton(operatorIcon: FontAwesomeIcons.minus),
+      ],
+    ));
+  }
+}
+
+class SecondRow extends StatelessWidget {
+  const SecondRow({
+    super.key,
+    required this.changeState,
+  });
+  final void Function(String) changeState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.seven,
+            changeState: changeState,
+            numberString: "7"),
+        NumbersButton(
+            numberIcon: FontAwesomeIcons.eight,
+            changeState: changeState,
+            numberString: "8"),
+        NumbersButton(
+          numberIcon: FontAwesomeIcons.nine,
+          changeState: changeState,
+          numberString: "9",
+        ),
+        const OperatorButton(operatorIcon: FontAwesomeIcons.xmark),
+      ],
+    ));
+  }
+}
+
+class FirstRow extends StatelessWidget {
+  const FirstRow({
+    super.key,
+    required this.changeState,
+  });
+  final void Function(String) changeState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: const [
+        OperatorButton(operatorIcon: FontAwesomeIcons.plusMinus),
+        OperatorButton(operatorIcon: FontAwesomeIcons.divide),
+        OperatorButton(operatorIcon: FontAwesomeIcons.percent),
+        OperatorButton(operatorIcon: FontAwesomeIcons.deleteLeft),
+      ],
+    ));
+  }
+}
+
+class DisplayScreen extends StatelessWidget {
+  const DisplayScreen({
+    super.key,
+    required this.latestParam,
+  });
+  final String latestParam;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 4,
+      child: Container(
+        width: double.infinity,
+        color: Colors.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '150 +',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.end,
+                ),
+                Text(
+                  latestParam,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                )
+              ],
+            )
+          ],
         ),
       ),
     );
@@ -140,15 +275,22 @@ class _CalculatorState extends State<Calculator> {
 class DotButton extends StatelessWidget {
   const DotButton({
     super.key,
+    required this.changeState,
   });
-
+  final void Function(String) changeState;
   @override
   Widget build(BuildContext context) {
     return TextButton(
-        onPressed: () {},
+        onPressed: () => changeState("."),
         style: const ButtonStyle(
-            padding: MaterialStatePropertyAll(EdgeInsets.all(24))),
-        child: const Text("."));
+            padding: MaterialStatePropertyAll(EdgeInsets.all(21))),
+        child: Text(
+          ".",
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w800, fontSize: 20),
+        ));
   }
 }
 
@@ -156,14 +298,17 @@ class NumbersButton extends StatelessWidget {
   const NumbersButton({
     super.key,
     required this.numberIcon,
+    required this.changeState,
+    required this.numberString,
   });
-
+  final void Function(String) changeState;
+  final String numberString;
   final IconData numberIcon;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-        onPressed: () {},
+        onPressed: () => changeState(numberString),
         child: Icon(
           numberIcon,
         ));
