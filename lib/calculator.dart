@@ -22,7 +22,7 @@ class _CalculatorState extends State<Calculator> {
     if (operator == "+") {
       setState(() {
         secondParam = (double.parse(firstParam) + double.parse(secondParam))
-            .toString()
+            .toStringAsFixed(3)
             .replaceAll(regex, "");
         ;
         firstParam = "";
@@ -30,7 +30,24 @@ class _CalculatorState extends State<Calculator> {
     } else if (operator == "-") {
       setState(() {
         secondParam = (double.parse(secondParam) - double.parse(firstParam))
-            .toString()
+            .toStringAsFixed(3)
+            .replaceAll(regex, "");
+        ;
+        firstParam = "";
+      });
+    } else if (operator == "x") {
+      setState(() {
+        secondParam = (double.parse(secondParam) * double.parse(firstParam))
+            .toStringAsFixed(3)
+            .replaceAll(regex, "");
+        ;
+        firstParam = "";
+      });
+    } else if (operator == "/") {
+      if (firstParam == "0") return;
+      setState(() {
+        secondParam = (double.parse(secondParam) / double.parse(firstParam))
+            .toStringAsFixed(3)
             .replaceAll(regex, "");
         ;
         firstParam = "";
@@ -40,7 +57,13 @@ class _CalculatorState extends State<Calculator> {
 
   void changeState(String key) {
     if (firstParam.isNotEmpty) {
-      if (firstParam == "0" && key == "0") return;
+      if (firstParam == "0" && key != ".") {
+        setState(() {
+          firstParam = key;
+        });
+        return;
+      }
+      ;
       if (firstParam.contains(".") && key == ".") return;
     }
 
