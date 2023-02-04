@@ -18,6 +18,22 @@ class _CalculatorState extends State<Calculator> {
     if (firstParam.isEmpty || operator.isEmpty || secondParam.isEmpty) {
       return;
     }
+    if (secondParam.contains("%")) {
+      secondParam =
+          (double.parse(secondParam.substring(0, secondParam.length - 1)) / 100)
+              .toString();
+    }
+    if (firstParam.contains("%") && (operator == "+" || operator == "-")) {
+      firstParam = (double.parse(secondParam) /
+              100 *
+              double.parse(firstParam.substring(0, firstParam.length - 1)))
+          .toString();
+    } else if (firstParam.contains("%") &&
+        (operator == "/" || operator == "x")) {
+      firstParam =
+          (double.parse(firstParam.substring(0, firstParam.length - 1)) / 100)
+              .toString();
+    }
     RegExp regex = RegExp(r"([.]*0+)(?!.*\d)");
     if (operator == "+") {
       setState(() {
@@ -101,6 +117,15 @@ class _CalculatorState extends State<Calculator> {
     });
   }
 
+  void addPercantage(String operation) {
+    if (firstParam.contains("%") || firstParam.isEmpty) {
+      return;
+    }
+    setState(() {
+      firstParam = "$firstParam%";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,6 +157,7 @@ class _CalculatorState extends State<Calculator> {
                 handleOperatorOnPress: handleOperatorOnPress,
                 deleteLastInput: deleteLastInput,
                 clearAll: clearAll,
+                addPercantage: addPercantage,
               )
             ],
           ),
@@ -148,11 +174,13 @@ class KeyboardScreen extends StatelessWidget {
     required this.handleOperatorOnPress,
     required this.deleteLastInput,
     required this.clearAll,
+    required this.addPercantage,
   });
   final void Function(String) changeState;
   final void Function(String) handleOperatorOnPress;
   final void Function(String) deleteLastInput;
   final void Function(String) clearAll;
+  final void Function(String) addPercantage;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -167,6 +195,7 @@ class KeyboardScreen extends StatelessWidget {
                 handleOperatorOnPress: handleOperatorOnPress,
                 deleteLastInput: deleteLastInput,
                 clearAll: clearAll,
+                addPercantage: addPercantage,
               ),
               SecondRow(
                 changeState: changeState,
@@ -210,6 +239,7 @@ class FifthRow extends StatelessWidget {
   final void Function(String) handleOperatorOnPress;
   final void Function(String) deleteLastInput;
   final void Function(String) clearAll;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -364,11 +394,13 @@ class FirstRow extends StatelessWidget {
     required this.handleOperatorOnPress,
     required this.deleteLastInput,
     required this.clearAll,
+    required this.addPercantage,
   });
   final void Function(String) changeState;
   final void Function(String) handleOperatorOnPress;
   final void Function(String) deleteLastInput;
   final void Function(String) clearAll;
+  final void Function(String) addPercantage;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -386,7 +418,7 @@ class FirstRow extends StatelessWidget {
         OperatorButton(
             operatorIcon: FontAwesomeIcons.percent,
             operatorString: "%",
-            handleOperatorOnPress: handleOperatorOnPress),
+            handleOperatorOnPress: addPercantage),
         OperatorButton(
             operatorIcon: FontAwesomeIcons.deleteLeft,
             operatorString: "delete",
