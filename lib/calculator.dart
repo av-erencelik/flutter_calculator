@@ -18,7 +18,7 @@ class _CalculatorState extends State<Calculator> {
     if (firstParam.isEmpty || operator.isEmpty || secondParam.isEmpty) {
       return;
     }
-    RegExp regex = RegExp(r'([.]*0)(?!.*\d)');
+    RegExp regex = RegExp(r"([.]*0+)(?!.*\d)");
     if (operator == "+") {
       setState(() {
         secondParam = (double.parse(firstParam) + double.parse(secondParam))
@@ -88,8 +88,8 @@ class _CalculatorState extends State<Calculator> {
         firstParam = "";
       });
     } else if (firstParam.isNotEmpty && secondParam.isNotEmpty) {
-      operator = operation;
       handleOperation();
+      operator = operation;
     }
   }
 
