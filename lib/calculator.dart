@@ -111,6 +111,14 @@ class _CalculatorState extends State<Calculator> {
       });
     } else if (firstParam.isNotEmpty && secondParam.isNotEmpty) {
       handleOperation();
+      if (operation == "=") {
+        setState(() {
+          firstParam = secondParam;
+          secondParam = "";
+          operator = "";
+        });
+        return;
+      }
       operator = operation;
     }
   }
