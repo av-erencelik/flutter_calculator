@@ -34,6 +34,11 @@ class _CalculatorState extends State<Calculator> {
           (double.parse(firstParam.substring(0, firstParam.length - 1)) / 100)
               .toString();
     }
+    if (firstParam.contains("-")) {
+      firstParam = firstParam.substring(1, firstParam.length - 1);
+    } else if (secondParam.contains("-")) {
+      secondParam = secondParam.substring(1, secondParam.length - 1);
+    }
     RegExp regex = RegExp(r"([.]*0+)(?!.*\d)");
     if (operator == "+") {
       setState(() {
@@ -98,6 +103,7 @@ class _CalculatorState extends State<Calculator> {
 
   void handleOperatorOnPress(String operation) {
     if (firstParam.isNotEmpty && secondParam.isEmpty) {
+      if (firstParam.contains("-")) firstParam = "$firstParam)";
       setState(() {
         operator = operation;
         secondParam = firstParam;
@@ -124,6 +130,18 @@ class _CalculatorState extends State<Calculator> {
     setState(() {
       firstParam = "$firstParam%";
     });
+  }
+
+  void makeInputNegative(String operation) {
+    if (firstParam.contains("-")) {
+      setState(() {
+        firstParam = firstParam.substring(2, firstParam.length);
+      });
+    } else {
+      setState(() {
+        firstParam = "(-$firstParam";
+      });
+    }
   }
 
   @override
@@ -158,6 +176,7 @@ class _CalculatorState extends State<Calculator> {
                 deleteLastInput: deleteLastInput,
                 clearAll: clearAll,
                 addPercantage: addPercantage,
+                makeInputNegative: makeInputNegative,
               )
             ],
           ),
@@ -175,12 +194,14 @@ class KeyboardScreen extends StatelessWidget {
     required this.deleteLastInput,
     required this.clearAll,
     required this.addPercantage,
+    required this.makeInputNegative,
   });
   final void Function(String) changeState;
   final void Function(String) handleOperatorOnPress;
   final void Function(String) deleteLastInput;
   final void Function(String) clearAll;
   final void Function(String) addPercantage;
+  final void Function(String) makeInputNegative;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -196,6 +217,7 @@ class KeyboardScreen extends StatelessWidget {
                 deleteLastInput: deleteLastInput,
                 clearAll: clearAll,
                 addPercantage: addPercantage,
+                makeInputNegative: makeInputNegative,
               ),
               SecondRow(
                 changeState: changeState,
@@ -395,12 +417,14 @@ class FirstRow extends StatelessWidget {
     required this.deleteLastInput,
     required this.clearAll,
     required this.addPercantage,
+    required this.makeInputNegative,
   });
   final void Function(String) changeState;
   final void Function(String) handleOperatorOnPress;
   final void Function(String) deleteLastInput;
   final void Function(String) clearAll;
   final void Function(String) addPercantage;
+  final void Function(String) makeInputNegative;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -410,7 +434,7 @@ class FirstRow extends StatelessWidget {
         OperatorButton(
             operatorIcon: FontAwesomeIcons.plusMinus,
             operatorString: "plus-minus",
-            handleOperatorOnPress: handleOperatorOnPress),
+            handleOperatorOnPress: makeInputNegative),
         OperatorButton(
             operatorIcon: FontAwesomeIcons.divide,
             operatorString: "/",
