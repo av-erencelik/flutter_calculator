@@ -36,7 +36,8 @@ class _CalculatorState extends State<Calculator> {
     }
     if (firstParam.contains("-")) {
       firstParam = firstParam.substring(1, firstParam.length - 1);
-    } else if (secondParam.contains("-")) {
+    }
+    if (secondParam.contains("-")) {
       secondParam = secondParam.substring(1, secondParam.length - 1);
     }
     RegExp regex = RegExp(r"([.]*0+)(?!.*\d)");
@@ -110,6 +111,7 @@ class _CalculatorState extends State<Calculator> {
         firstParam = "";
       });
     } else if (firstParam.isNotEmpty && secondParam.isNotEmpty) {
+      if (firstParam.contains("-")) firstParam = "$firstParam)";
       handleOperation();
       if (operation == "=") {
         setState(() {
